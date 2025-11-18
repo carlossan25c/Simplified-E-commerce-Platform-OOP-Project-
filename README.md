@@ -1,0 +1,1 @@
+# Simplified-E-commerce-Platform-OOP-Project-
