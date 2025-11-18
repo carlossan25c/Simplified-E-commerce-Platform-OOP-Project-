@@ -47,8 +47,7 @@ class Cliente:
       e formatar o 'email' e o 'cpf'.
     - Gerencia o relacionamento 1:N com a classe Endereco (Composição).
     """
-    def __init__(self, id: int, nome: str, email: str, cpf: str):
-        self._id = id
+    def __init__(self, nome: str, email: str, cpf: str):
         self._nome = nome
         self._email = email     # Será validado via @property
         self._cpf = cpf         # Será validado via @property
