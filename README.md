@@ -33,7 +33,7 @@ Classe| Atributos e Propriedades Chave| Métodos Principais| Relacionamentos
 Produto| `sku: str` (PK, único), `nome: str`, `preco_unitario: float` (>0, `@property`), `estoque: int` (>=0, `@property`), `ativo: bool`| `ajustar_estoque(quantidade), __str__(), __eq__(sku), __lt__(preco_nome)`| ItemCarrinho (1:N), ItemPedido (1:N)
 ProdutoFisico| `peso: float`| (Herda de Produto)| Herda de Produto.
 ProdutoDigital| `link_download: str`| (Herda de Produto)| Herda de Produto.
-Cliente| `id: int, nome: str, email: str` (único, válido, `@property`), `cpf: str` (único, válido, `@property),enderecos: list[Endereco]`| `adicionar_endereco(endereco), __eq__(cpf_email)`| Endereco (1:N), Pedido (1:N)| 
+Cliente| `cpf: str, nome: str, email: str` (único, válido, `@property`), `cpf: str` (único, válido, `@property),enderecos: list[Endereco]`| `adicionar_endereco(endereco), __eq__(cpf_email)`| Endereco (1:N), Pedido (1:N)| 
 Endereco| `cep: str, cidade: str, uf: str, logradouro: str`|` __str__()`| Cliente (N:1)
 
 ## 2. Fluxo de Vendas (Carrinho e Pedido)    
@@ -41,7 +41,7 @@ Classe| Atributos e Propriedades Chave| Métodos Principais| Relacionamentos
 ------|-------------------------------|-------------------|-----------------
 Carrinho| `itens: list[ItemCarrinho]`| `adicionar_item(produto, quantidade), remover_item(sku), alterar_quantidade(sku, qtd), calcular_subtotal(), __len__`| ItemCarrinho (1:N)
 ItemCarrinho| `produto: Produto, quantidade: int` (>=1, `@property`)| `calcular_subtotal_item()`| Produto (1:1), Carrinho (N:1)
-Pedido| `id: int, cliente: Cliente, itens: list[ItemPedido], estado: str, frete: Frete, desconto: float, total: float`| `fechar_pedido(...), calcular_total(), gerar_resumo_nota(), cancelar(), __str__`| Cliente (1:1), ItemPedido (1:N), Pagamento (1:N), Cupom (0:1), Frete (1:1)
+Pedido| `codigo_pedido: str, cliente: Cliente, itens: list[ItemPedido], estado: str, frete: Frete, desconto: float, total: float`| `fechar_pedido(...), calcular_total(), gerar_resumo_nota(), cancelar(), __str__`| Cliente (1:1), ItemPedido (1:N), Pagamento (1:N), Cupom (0:1), Frete (1:1)
 ItemPedido| `produto: Produto, quantidade: int, preco_na_data: float`| `calcular_subtotal_item()`| Produto (1:1), Pedido (N:1)
 
 ## 3. Transações e Regras de Negócio    
