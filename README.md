@@ -30,7 +30,7 @@ O objetivo primordial deste trabalho é aplicar e exibir maestria nos princípio
 ## 1. Entidades Básicas (Modelagem do Domínio)    
 Classe| Atributos e Propriedades Chave| Métodos Principais| Relacionamentos
 ------|-------------------------------|-------------------|-----------------
-Produto| `sku: str` (PK, único), `nome: str`, `preco_unitario: float` (>0, `@property`), `estoque: int` (>=0, `@property`), `ativo: bool`| `ajustar_estoque(quantidade), __str__(), __eq__(sku), __lt__(preco_nome)`| ItemCarrinho (1:N), ItemPedido (1:N)
+Produto| `sku: str` (único), `nome: str`, `preco_unitario: float` (>0, `@property`), `estoque: int` (>=0, `@property`), `ativo: bool`| `ajustar_estoque(quantidade), __str__(), __eq__(sku), __lt__(preco_nome)`| ItemCarrinho (1:N), ItemPedido (1:N)
 ProdutoFisico| `peso: float`| (Herda de Produto)| Herda de Produto.
 ProdutoDigital| `link_download: str`| (Herda de Produto)| Herda de Produto.
 Cliente| `cpf: str, nome: str, email: str` (único, válido, `@property`), `cpf: str` (único, válido, `@property),enderecos: list[Endereco]`| `adicionar_endereco(endereco), __eq__(cpf_email)`| Endereco (1:N), Pedido (1:N)| 
@@ -101,3 +101,4 @@ Alternativa| Embora a especificação também mencione a Interface de Linha de C
 ---------------------------|--------------------------------------------
 POST /pedidos/fechar   -> | Chama o PedidoService para fechar o pedido
 POST /pedidos/`<id>`/pagar -> | Chama o PagamentoService para registrar o pagamento
+
