@@ -105,13 +105,18 @@ POST /pedidos/`<id>`/pagar -> | Chama o PagamentoService para registrar o pagame
 
 # Requesitos de execução 
 
-#### Execução de Testes Unitários
+### Execução projeto
+
+* Python 3.1 
+
+### Execução de Testes Unitários
 
 Para validar o encapsulamento e as regras de negócio implementadas, utilize o pytest:
 
-|1. Instale o framework:|
-------------------------|
+1. Instale o framework:
+
    ```bash
-   pip install pytest
+   pip install pytest 
+
 
 
