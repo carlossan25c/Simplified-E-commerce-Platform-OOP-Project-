@@ -52,39 +52,40 @@ Pagamento| `data: datetime, forma: str, valor: float`| `registrar_pagamento(pedi
 Frete| `valor: float, prazo_estimado_dias: int`| `calcular_frete(cep, uf) `(Baseado em `settings.json`)| Obrigatório antes do pagamento. Produtos digitais não somam frete.
 # 📁 Estruturas de classes 
 ```
-. (root)    
-├── README.md    
-├── app.py     
-├── requirements.txt    
-│    
-├── data/    
-│   └── loja.json    
-│   └── settings.json    
-|    
-├── models/    
-│   ├── __init__.py     
-│   ├── entidades.py    # Cliente, Produto, Endereco    
-│   ├── vendas.py       # Carrinho, Pedido, Item...    
-│   └── transacoes.py   # Pagamento, Cupom, Frete    
-|    
-├── repositories/    
-│   ├── __init__.py    
-│   ├── produto_repository.py    
-│   ├── cliente_repository.py    
-│   └── pedido_repository.py    
-|    
-├── services/    
-│   ├── __init__.py    
-│   ├── estoque_service.py    
-│   ├── carrinho_service.py    
-│   ├── pedido_service.py    
-│   └── relatorio_service.py    
-│    
-└── tests/    
-    ├── __init__.py    
-    ├── test_models.py    
-    ├── test_services.py     
-    └── test_regras_negocio.py
+. (root)
+├── README.md
+├── app.py                  # Ponto de entrada (Flask/CLI)
+├── requirements.txt
+│
+├── data/
+│   └── loja.json           # Persistência de dados (JSON único)
+│   └── settings.json       # Configurações globais (Frete/Cupom)
+│
+├── models/                 # Camada de Entidades e Regras de POO
+│   ├── __init__.py
+│   ├── exceptions.py       # Arquivo para classes de erro (ValorInvalidoError)
+│   ├── entidades.py        # IMPLEMENTADO: Cliente, Produto, Endereco (com encapsulamento)
+│   ├── vendas.py           # (Esqueleto pronto) Carrinho, Pedido, Item...
+│   └── transacoes.py       # (Esqueleto pronto) Pagamento, Cupom, Frete
+│
+├── repositories/           # Camada de Persistência (JSON)
+│   ├── __init__.py
+│   ├── produto_repository.py   # (Esqueleto pronto) Métodos CRUD de Produto
+│   ├── cliente_repository.py   # (Esqueleto pronto) Métodos CRUD de Cliente
+│   └── pedido_repository.py    # (Esqueleto pronto) Métodos CRUD de Pedido
+│
+├── services/               # Camada de Regras de Negócio e Lógica Complexa
+│   ├── __init__.py
+│   ├── estoque_service.py      # (Esqueleto pronto)
+│   ├── carrinho_service.py     # (Esqueleto pronto)
+│   ├── pedido_service.py       # (Esqueleto pronto)
+│   └── relatorio_service.py    # (Esqueleto pronto)
+│
+└── tests/                  # Testes Unitários com Pytest
+    ├── __init__.py
+    ├── test_models.py          # CRIADO: Cobre entidades.py e valida o encapsulamento.
+    ├── test_services.py        # (Próxima Fase)
+    └── test_regras_negocio.py  # (Próxima Fase)
 ```
 # 🛠️Decisões de Framework
 
@@ -101,4 +102,16 @@ Alternativa| Embora a especificação também mencione a Interface de Linha de C
 ---------------------------|--------------------------------------------
 POST /pedidos/fechar   -> | Chama o PedidoService para fechar o pedido
 POST /pedidos/`<id>`/pagar -> | Chama o PagamentoService para registrar o pagamento
+
+# Requesitos de execução 
+
+#### Execução de Testes Unitários
+
+Para validar o encapsulamento e as regras de negócio implementadas, utilize o pytest:
+
+|1. Instale o framework:|
+------------------------|
+   ```bash
+   pip install pytest
+
 
