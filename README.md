@@ -70,6 +70,7 @@ Frete| `valor: float, prazo_estimado_dias: int`| `calcular_frete(cep, uf) `(Base
 │
 ├── repositories/           # Camada de Persistência (JSON)
 │   ├── __init__.py
+|   ├── dados.py
 │   ├── produto_repository.py   # (Esqueleto pronto) Métodos CRUD de Produto
 │   ├── cliente_repository.py   # (Esqueleto pronto) Métodos CRUD de Cliente
 │   └── pedido_repository.py    # (Esqueleto pronto) Métodos CRUD de Pedido
@@ -83,6 +84,7 @@ Frete| `valor: float, prazo_estimado_dias: int`| `calcular_frete(cep, uf) `(Base
 │
 └── tests/                  # Testes Unitários com Pytest
     ├── __init__.py
+    ├── test_entidades.py
     ├── test_models.py          # CRIADO: Cobre entidades.py e valida o encapsulamento.
     ├── test_services.py        # (Próxima Fase)
     └── test_regras_negocio.py  # (Próxima Fase)
@@ -117,6 +119,7 @@ Para validar o encapsulamento e as regras de negócio implementadas, utilize o p
 
    ```bash
    pip install pytest 
+
 
 
 
