@@ -1,31 +1,43 @@
-from models.vendas import Carrinho, Pedido
-from models.entidades import Cliente
-from models.transacoes import Frete, Cupom
-from repositories import pedido_repository
-from services.estoque_service import EstoqueService # Importamos o novo Service
-from models.exceptions import ValorInvalidoError 
+# Arquivo: services/pedido_service.py
 
-class PedidoService:
-    """Gerencia a lógica de fechamento de pedido, estoque e persistência."""
+import repositories.pedido_repository as pedido_repository
+from models.vendas import Pedido
+from models.exceptions import ValorInvalidoError
+from typing import Literal
+
+# Definindo os Status Válidos para o Pedido
+StatusPedido = Literal["CRIADO", "PAGO", "SEPARACAO", "ENVIADO", "ENTREGUE", "CANCELADO"]
+
+TRANSICOES_VALIDAS = {
+    # De: Status Atual | Para: Statuses Permitidos
+    "CRIADO": ["PAGO", "CANCELADO"],
+    "PAGO": ["SEPARACAO", "CANCELADO"],
+    "SEPARACAO": ["ENVIADO", "CANCELADO"],
+    "ENVIADO": ["ENTREGUE"],
+    "ENTREGUE": [], # Estado final (não pode mais mudar)
+    "CANCELADO": [] # Estado final (não pode mais mudar)
+}
+
+def avancar_status(codigo_pedido: str, novo_status: StatusPedido):
+    pedido = pedido_repository.buscar_por_codigo(codigo_pedido)
     
-    @staticmethod
-    def fechar_pedido_a_partir_do_carrinho(cliente: Cliente, carrinho: Carrinho, frete: Frete, cupom: Cupom = None) -> Pedido:
-        """
-        Orquestra a criação do pedido, validação de estoque, ajuste de estoque e persistência.
-        """
-        
-        if not carrinho._itens:
-            raise ValorInvalidoError("O carrinho não pode estar vazio.")
-            
-        
-        EstoqueService.validar_baixa_estoque(carrinho._itens)
-                
-        pedido = Pedido(cliente, carrinho, frete, cupom)
-        
-        EstoqueService.realizar_baixa_estoque(carrinho._itens)
-                
-        pedido_repository.salvar_pedido(pedido)
-        
-        carrinho._itens = [] 
-        
-        return pedido
+    if not pedido:
+        raise ValorInvalidoError(f"Pedido com código '{codigo_pedido}' não encontrado.")
+    
+    status_atual = pedido._estado
+    novo_status = novo_status.upper()
+    
+    if novo_status not in TRANSICOES_VALIDAS.keys():
+        raise ValorInvalidoError(f"Status '{novo_status}' não é um status válido.")
+
+    # 1. Checa se a transição é permitida usando o dicionário TRANSICOES_VALIDAS
+    if novo_status not in TRANSICOES_VALIDAS.get(status_atual, []):
+        raise ValorInvalidoError(
+            f"Transição inválida: Não é possível mudar de '{status_atual}' para '{novo_status}'."
+        )
+
+    # 2. Atualiza o estado na entidade e persiste no repositório
+    pedido._estado = novo_status
+    pedido_repository.salvar(pedido)
+    
+    return pedido

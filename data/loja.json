@@ -40,6 +40,16 @@
             "estoque": 95,
             "ativo": true,
             "tipo": "Produto"
+        },
+        {
+            "sku": "CEL-003",
+            "nome": "CELULAR",
+            "categoria": "ELETRÔNICOS",
+            "preco_unitario": 1800.0,
+            "estoque": 7,
+            "ativo": true,
+            "tipo": "fisico",
+            "peso": 0.1
         }
     ],
     "pedidos": [
@@ -118,6 +128,82 @@
             ],
             "frete_valor": 25.0,
             "cupom_codigo": "TESTE10"
+        },
+        {
+            "codigo_pedido": "e904271a-b0ca-4711-9f7e-73b6ad77f164",
+            "data_criacao": "2025-12-09T19:59:13.724505",
+            "cpf_cliente": "61420869388",
+            "estado": "CRIADO",
+            "frete_valor": 15.0,
+            "cupom_codigo": null,
+            "subtotal": 120.0,
+            "desconto": 0.0,
+            "total": 135.0,
+            "itens": [
+                {
+                    "sku": "LIV-001",
+                    "nome": "POO Avançada",
+                    "preco_na_data": 120.0,
+                    "quantidade": 1
+                }
+            ]
+        },
+        {
+            "codigo_pedido": "4a580a3f-361a-422d-9713-a6974582ecec",
+            "data_criacao": "2025-12-09T20:13:27.059047",
+            "cpf_cliente": "61420869388",
+            "estado": "CRIADO",
+            "frete_valor": 15.0,
+            "cupom_codigo": null,
+            "subtotal": 120.0,
+            "desconto": 0.0,
+            "total": 135.0,
+            "itens": [
+                {
+                    "sku": "LIV-001",
+                    "nome": "POO Avançada",
+                    "preco_na_data": 120.0,
+                    "quantidade": 1
+                }
+            ]
+        },
+        {
+            "codigo_pedido": "337fa3f1-734b-4ae6-b2aa-9b4153278918",
+            "data_criacao": "2025-12-09T20:35:33.598076",
+            "cpf_cliente": "61420869388",
+            "estado": "CRIADO",
+            "frete_valor": 15.0,
+            "cupom_codigo": null,
+            "subtotal": 1800.0,
+            "desconto": 0.0,
+            "total": 1815.0,
+            "itens": [
+                {
+                    "sku": "CEL-003",
+                    "nome": "CELULAR",
+                    "preco_na_data": 1800.0,
+                    "quantidade": 1
+                }
+            ]
+        },
+        {
+            "codigo_pedido": "7871ffa2-0807-453f-9858-d948b89b63ad",
+            "data_criacao": "2025-12-09T20:42:44.198522",
+            "cpf_cliente": "61420869388",
+            "estado": "CRIADO",
+            "frete_valor": 15.0,
+            "cupom_codigo": null,
+            "subtotal": 1800.0,
+            "desconto": 0.0,
+            "total": 1815.0,
+            "itens": [
+                {
+                    "sku": "CEL-003",
+                    "nome": "CELULAR",
+                    "preco_na_data": 1800.0,
+                    "quantidade": 1
+                }
+            ]
         }
     ],
     "cupons": []
