@@ -1,0 +1,10 @@
+{
+    "regra_estoque": {
+        "limite_seguranca": 5,
+        "alerta_percentual": 0.15
+    },
+    "frete": {
+        "valor_padrao": 25.0,
+        "prazo_dias": 5
+    }
+}

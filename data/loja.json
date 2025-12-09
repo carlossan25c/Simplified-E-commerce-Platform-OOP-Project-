@@ -21,7 +21,7 @@
             "nome": "POO Avançada",
             "categoria": "Livros",
             "preco_unitario": 120.0,
-            "estoque": 8,
+            "estoque": 5,
             "ativo": true,
             "tipo": "ProdutoFisico",
             "peso": 0.5
@@ -55,6 +55,44 @@
             ],
             "frete_valor": 25.0,
             "cupom_codigo": "TESTE"
+        },
+        {
+            "codigo_pedido": "39942a0d-513c-4476-aa33-6d85af700911",
+            "data_criacao": "2025-12-09T11:25:01.735165",
+            "cpf_cliente": "12345678901",
+            "estado": "CRIADO",
+            "subtotal": 240.0,
+            "desconto": 24.0,
+            "total": 241.0,
+            "itens": [
+                {
+                    "sku": "LIV-001",
+                    "nome": "POO Avançada",
+                    "preco_na_data": 120.0,
+                    "quantidade": 2
+                }
+            ],
+            "frete_valor": 25.0,
+            "cupom_codigo": "TESTE10"
+        },
+        {
+            "codigo_pedido": "27121188-a4a4-4cd7-b105-38bd17058de6",
+            "data_criacao": "2025-12-09T12:17:32.652556",
+            "cpf_cliente": "12345678901",
+            "estado": "CRIADO",
+            "subtotal": 120.0,
+            "desconto": 12.0,
+            "total": 133.0,
+            "itens": [
+                {
+                    "sku": "LIV-001",
+                    "nome": "POO Avançada",
+                    "preco_na_data": 120.0,
+                    "quantidade": 1
+                }
+            ],
+            "frete_valor": 25.0,
+            "cupom_codigo": "TESTE10"
         }
     ],
     "cupons": []

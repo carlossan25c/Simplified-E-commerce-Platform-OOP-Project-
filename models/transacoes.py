@@ -1,6 +1,5 @@
 from datetime import date, datetime
-from .exceptions import ValorInvalidoError
-from datetime import date, datetime 
+from models.exceptions import ValorInvalidoError
 
 class Frete:
     """Representa o valor e o prazo de entrega."""
@@ -19,34 +18,46 @@ class Frete:
         return f"Frete {self._transportadora}: R$ {self._valor:.2f} ({self._prazo_dias} dias)"
 
 
-
 class Cupom:
     """Cupom de desconto com validação básica de validade."""
+
     def __init__(self, codigo: str, valor: float, is_percentual: bool, validade: date):
-        self._codigo = codigo.upper()
+        # O Python agora reconhecerá o construtor com 4 argumentos
+        if valor <= 0:
+            raise ValorInvalidoError("Valor do cupom deve ser positivo.")
+            
+        self._codigo = codigo
         self._valor = valor
         self._is_percentual = is_percentual
         self._validade = validade
+    
+    @property
+    def codigo(self):
+        return self._codigo
 
     def is_valido(self) -> bool:
         """Verifica se o cupom não expirou."""
         return self._validade >= date.today()
 
     def calcular_desconto(self, subtotal: float) -> float:
-        """Calcula o valor de desconto."""
+        """Calcula o valor de desconto a ser aplicado, limitado a 50% (Regra da Entrega 4)."""
         if not self.is_valido():
             return 0.0
 
+        limite_desconto = subtotal * 0.50
+        
         if self._is_percentual:
-            desconto = subtotal * (self._valor / 100)
-            return min(desconto, subtotal) 
+            desconto_bruto = subtotal * (self._valor / 100)
         else:
-            return min(self._valor, subtotal) 
+            desconto_bruto = self._valor
+        
+        desconto_aplicavel = min(desconto_bruto, limite_desconto)
+        
+        return min(desconto_aplicavel, subtotal) 
 
     def __str__(self):
-        tipo = f"{self._valor:.2f}%" if self._is_percentual else f"R$ {self._valor:.2f}"
-        return f"CUPOM {self._codigo} ({tipo})"
-
+        tipo = "%" if self._is_percentual else "R$"
+        return f"CUPOM {self._codigo} ({self._valor}{tipo})"
 
 class Pagamento:
     """Classe base para métodos de pagamento."""
@@ -90,24 +101,3 @@ class PagamentoBoleto(Pagamento):
     def __str__(self):
         return f"{super().__str__()} (Boleto, Vencimento: {self._vencimento.strftime('%d/%m/%Y')})"
     
-
-class Cupom:
-    # ... (métodos __init__, is_valido)
-
-    def calcular_desconto(self, subtotal: float) -> float:
-        """Calcula o valor de desconto a ser aplicado ao subtotal, limitado a 50%."""
-        if not self.is_valido():
-            return 0.0
-
-        # Regra de Negócio: Limitar o desconto a 50% do subtotal
-        limite_desconto = subtotal * 0.50
-        
-        if self._is_percentual:
-            desconto_bruto = subtotal * (self._valor / 100)
-        else:
-            desconto_bruto = self._valor
-
-        
-        desconto_aplicavel = min(desconto_bruto, limite_desconto)
-        
-        return min(desconto_aplicavel, subtotal)

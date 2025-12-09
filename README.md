@@ -27,34 +27,53 @@ O objetivo primordial deste trabalho é aplicar e exibir maestria nos princípio
 
 # 💡 Estrutura de Classes (UML Textual)
 
-## 1. Entidades Básicas (Modelagem do Domínio)    
-Classe| Atributos e Propriedades Chave| Métodos Principais| Relacionamentos
-------|-------------------------------|-------------------|-----------------
-Produto| `sku: str` (único), `nome: str`, `preco_unitario: float` (>0, `@property`), `estoque: int` (>=0, `@property`), `ativo: bool`| `ajustar_estoque(quantidade), __str__(), __eq__(sku), __lt__(preco_nome)`| ItemCarrinho (1:N), ItemPedido (1:N)
-ProdutoFisico| `peso: float`| (Herda de Produto)| Herda de Produto.
-ProdutoDigital| `link_download: str`| (Herda de Produto)| Herda de Produto.
-Cliente| `cpf: str, nome: str, email: str` (único, válido, `@property`), `cpf: str` (único, válido, `@property),enderecos: list[Endereco]`| `adicionar_endereco(endereco), __eq__(cpf_email)`| Endereco (1:N), Pedido (1:N)| 
-Endereco| `cep: str, cidade: str, uf: str, logradouro: str`|` __str__()`| Cliente (N:1)
+## 1. Camada de Modelagem e POO (`models/`)
 
-## 2. Fluxo de Vendas (Carrinho e Pedido)    
-Classe| Atributos e Propriedades Chave| Métodos Principais| Relacionamentos
-------|-------------------------------|-------------------|-----------------
-Carrinho| `itens: list[ItemCarrinho]`| `adicionar_item(produto, quantidade), remover_item(sku), alterar_quantidade(sku, qtd), calcular_subtotal(), __len__`| ItemCarrinho (1:N)
-ItemCarrinho| `produto: Produto, quantidade: int` (>=1, `@property`)| `calcular_subtotal_item()`| Produto (1:1), Carrinho (N:1)
-Pedido| `codigo_pedido: str, cliente: Cliente, itens: list[ItemPedido], estado: str, frete: Frete, desconto: float, total: float`| `fechar_pedido(...), calcular_total(), gerar_resumo_nota(), cancelar(), __str__`| Cliente (1:1), ItemPedido (1:N), Pagamento (1:N), Cupom (0:1), Frete (1:1)
-ItemPedido| `produto: Produto, quantidade: int, preco_na_data: float`| `calcular_subtotal_item()`| Produto (1:1), Pedido (N:1)
+Esta camada define as entidades, o encapsulamento, a herança e os relacionamentos do domínio de vendas.
 
-## 3. Transações e Regras de Negócio    
-Classe| Atributos e Propriedades Chave| Métodos Principais| Relacionamentos
-------|-------------------------------|-------------------|-----------------
-Cupom| `codigo: str, tipo: str` (VALOR/PERCENTUAL), `valor_margem: float, data_validade: datetime, uso_maximo: int`| `validar(carrinho), aplicar_desconto(subtotal)`| Não permitir desconto que torne total $< 0.$| 
-Pagamento| `data: datetime, forma: str, valor: float`| `registrar_pagamento(pedido), validar_total(pedido)`| Total pago $\ge$ total do pedido.| 
-Frete| `valor: float, prazo_estimado_dias: int`| `calcular_frete(cep, uf) `(Baseado em `settings.json`)| Obrigatório antes do pagamento. Produtos digitais não somam frete.
+| Arquivo | Classe | Princípio POO e Finalidade |
+| :--- | :--- | :--- |
+| **`entidades.py`** | `Produto` | Classe base. Encapsulamento e validação de preço/estoque. |
+| | `ProdutoFisico` | **Herança** de `Produto`. Adiciona e valida o atributo `_peso`. |
+| | `Cliente` | Encapsulamento. Validação de formato de CPF. |
+| | `Endereco` | Objeto de Valor (Composição em `Cliente`). |
+| **`vendas.py`** | `Carrinho` | **Agregação**. Implementa o método mágico `__len__`. |
+| | `Pedido` | **Composição** (contém `ItemPedido`). Lógica de cálculo de total. |
+| | `ItemCarrinho` | Item temporário de venda. |
+| **`transacoes.py`** | `Cupom` | Objeto de Valor. Implementa a **Regra de Negócio Avançada** (limite de 50% de desconto). |
+| | `Frete` | Objeto de Valor. |
+| **`exceptions.py`** | `ValorInvalidoError` | Exceção customizada (erros de valor). |
+
+
+## 2. Camada de Persistência e Configuração (`repositories/`)
+
+Esta camada isola a lógica de I/O, gerenciando os arquivos `loja.json` (dados) e `settings.json` (configurações).
+
+| Arquivo | Entidade Gerenciada | Função no Projeto (I/O Isolation) |
+| :--- | :--- | :--- |
+| **`dados.py`** | Dados Brutos (`loja.json`) | Módulo utilitário central. Faz o I/O do arquivo `loja.json`. |
+| **`settings_repository.py`** | Configurações (`settings.json`) | Leitura de constantes de sistema e **Regras de Negócio Globais** (ex: `limite_seguranca`). |
+| **`produto_repository.py`** | `Produto` / `ProdutoFisico` | CRUD específico. Lida com a serialização/desserialização e a lógica de **herança**. |
+| **`cliente_repository.py`** | `Cliente` | CRUD específico. |
+| **`pedido_repository.py`** | `Pedido` | CRUD específico. |
+
+## 3. Camada de Regras de Negócio e Serviços (`services/`)
+
+A camada de "inteligência" do sistema, responsável por executar a lógica complexa e as Regras de Negócio da Entrega 4.
+
+| Arquivo | Classe | Responsabilidade Principal (Separação de Preocupações) |
+| :--- | :--- | :--- |
+| **`pedido_service.py`** | `PedidoService` | **Orquestrador Central:** Gerencia o fluxo completo de venda (validação, criação do pedido e persistência). |
+| **`estoque_service.py`** | `EstoqueService` | **Regra de Negócio:** Implementa a lógica de **Validação de Estoque de Segurança** (lendo a regra do `settings.json`). |
+| **`relatorio_service.py`** | `RelatorioService` | **Relatórios:** Processa a lista de pedidos para gerar o Relatório de Faturamento por Período. |
+| **`carrinho_service.py`** | `CarrinhoService` | *Esqueleto* — Reservado para lógica futura. |
+
+
 # 📁 Estruturas de classes 
 ```
 . (root)
 ├── README.md
-├── app.py                  # Ponto de entrada (Flask/CLI)
+├── app.py                  # Ponto de entrada (CLI)
 ├── requirements.txt
 │
 ├── data/
@@ -73,7 +92,8 @@ Frete| `valor: float, prazo_estimado_dias: int`| `calcular_frete(cep, uf) `(Base
 |   ├── dados.py
 │   ├── produto_repository.py   # (Esqueleto pronto) Métodos CRUD de Produto
 │   ├── cliente_repository.py   # (Esqueleto pronto) Métodos CRUD de Cliente
-│   └── pedido_repository.py    # (Esqueleto pronto) Métodos CRUD de Pedido
+│   ├── pedido_repository.py    # (Esqueleto pronto) Métodos CRUD de Pedido
+│   └── settings_repository.py 
 │
 ├── services/               # Camada de Regras de Negócio e Lógica Complexa
 │   ├── __init__.py
@@ -89,21 +109,6 @@ Frete| `valor: float, prazo_estimado_dias: int`| `calcular_frete(cep, uf) `(Base
     ├── test_services.py        # (Próxima Fase)
     └── test_regras_negocio.py  # (Próxima Fase)
 ```
-# 🛠️Decisões de Framework
-
-## 1. Escolha do Framework: Flask
-
-Framework Web| Flask (Micro-framework Python) será utilizado para implementar a API Mínima  como interface de interação do sistema.
--------------|---------------------------------------------------------------------------------------------------------------------
-Justificativa| O Flask é leve e flexível, ideal para o escopo do projeto que requer apenas endpoints equivalentes aos comandos CLI (ex: `/clientes/cadastrar, /pedidos/fechar`). Isso permite focar na lógica de POO, que é o objetivo principal do trabalho.
-Alternativa| Embora a especificação também mencione a Interface de Linha de Comando (CLI), a API mínima com Flask oferece uma estrutura modular (utilizando os `Services` e `Models`) mais clara e escalável.
-
-## 2. Estrutura da API Mínima com Flask
-
-|GET /produtos/         -> | Lista todos os produtos (via Repositories)
----------------------------|--------------------------------------------
-POST /pedidos/fechar   -> | Chama o PedidoService para fechar o pedido
-POST /pedidos/`<id>`/pagar -> | Chama o PagamentoService para registrar o pagamento
 
 # Requesitos de execução 
 
@@ -120,6 +125,16 @@ Para validar o encapsulamento e as regras de negócio implementadas, utilize o p
    ```bash
    pip install pytest 
 
+   
+**Configuração do Ambiente**
 
-
-
+1.  Recomendamos o uso de um ambiente virtual (`venv`):
+    ```bash
+    python -m venv venv
+    .\venv\Scripts\activate  # No Windows
+    source venv/bin/activate # No Linux/macOS
+    ```
+2.  Instale todas as dependências do projeto usando o requirements.txt:
+    ```bash
+    pip install -r requirements.txt
+    ```
