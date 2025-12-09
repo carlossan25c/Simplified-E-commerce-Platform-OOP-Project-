@@ -1,0 +1,61 @@
+{
+    "clientes": [
+        {
+            "cpf": "12345678901",
+            "nome": "Alice Silva",
+            "email": "alice@teste.com",
+            "enderecos": [
+                {
+                    "cep": "63040440",
+                    "logradouro": "Rua C",
+                    "numero": "100",
+                    "cidade": "Juazeiro",
+                    "uf": "CE"
+                }
+            ]
+        }
+    ],
+    "produtos": [
+        {
+            "sku": "LIV-001",
+            "nome": "POO Avançada",
+            "categoria": "Livros",
+            "preco_unitario": 120.0,
+            "estoque": 8,
+            "ativo": true,
+            "tipo": "ProdutoFisico",
+            "peso": 0.5
+        },
+        {
+            "sku": "CUR-002",
+            "nome": "Curso Python",
+            "categoria": "Digital",
+            "preco_unitario": 299.0,
+            "estoque": 100,
+            "ativo": true,
+            "tipo": "Produto"
+        }
+    ],
+    "pedidos": [
+        {
+            "codigo_pedido": "90d1e3f8-30c7-4b5a-94d3-000000000001",
+            "data_criacao": "2025-12-09T10:00:00.000000",
+            "cpf_cliente": "12345678901",
+            "estado": "PAGO",
+            "subtotal": 500.0,
+            "desconto": 50.0,
+            "total": 475.0,
+            "itens": [
+                {
+                    "sku": "CUR-002",
+                    "nome": "Curso Python",
+                    "preco_na_data": 250.0,
+                    "quantidade": 2
+                }
+            ],
+            "frete_valor": 25.0,
+            "cupom_codigo": "TESTE"
+        }
+    ],
+    "cupons": []
+}

@@ -89,3 +89,25 @@ class PagamentoBoleto(Pagamento):
 
     def __str__(self):
         return f"{super().__str__()} (Boleto, Vencimento: {self._vencimento.strftime('%d/%m/%Y')})"
+    
+
+class Cupom:
+    # ... (métodos __init__, is_valido)
+
+    def calcular_desconto(self, subtotal: float) -> float:
+        """Calcula o valor de desconto a ser aplicado ao subtotal, limitado a 50%."""
+        if not self.is_valido():
+            return 0.0
+
+        # Regra de Negócio: Limitar o desconto a 50% do subtotal
+        limite_desconto = subtotal * 0.50
+        
+        if self._is_percentual:
+            desconto_bruto = subtotal * (self._valor / 100)
+        else:
+            desconto_bruto = self._valor
+
+        
+        desconto_aplicavel = min(desconto_bruto, limite_desconto)
+        
+        return min(desconto_aplicavel, subtotal)
