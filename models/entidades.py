@@ -1,9 +1,6 @@
 import re # Usado para validações básicas de CPF e Email
 from .exceptions import ValorInvalidoError, DocumentoInvalidoError 
 
-# CLASSE PRODUTO
-# O SKU (código único) é o identificador
-
 class Produto:
     """
     Representa um produto disponível para venda. O SKU é o código único.
@@ -20,8 +17,6 @@ class Produto:
         self.preco_unitario = preco
         self.estoque = estoque      
 
-    # --- ENCAPSULAMENTO PARA PREÇO UNITÁRIO (@property) ---
-
     @property
     def preco_unitario(self) -> float:
         """Getter: Retorna o preço unitário do produto."""
@@ -34,8 +29,6 @@ class Produto:
             raise ValorInvalidoError("O preço unitário deve ser um valor maior que zero.")
         self._preco_unitario = novo_preco
 
-    # --- ENCAPSULAMENTO PARA ESTOQUE (@property) ---
-
     @property
     def estoque(self) -> int:
         """Getter: Retorna a quantidade em estoque do produto."""
@@ -47,8 +40,6 @@ class Produto:
         if nova_quantidade < 0:
             raise ValorInvalidoError("O estoque não pode ser negativo no cadastro.")
         self._estoque = nova_quantidade
-
-    # --- MÉTODOS ESPECIAIS ---
     
     def __eq__(self, outro):
         """Dois produtos são considerados iguais se possuírem o mesmo SKU (código único)."""
@@ -65,8 +56,6 @@ class Produto:
         """Ajusta o estoque, usando o setter para garantir a validação."""
         self.estoque += quantidade
 
-# --- CLASSE PRODUTO FÍSICO (Herança Opcional) ---
-
 class ProdutoFisico(Produto):
     """Subclasse de Produto para itens que exigem cálculo de frete baseado no peso."""
     def __init__(self, sku: str, nome: str, categoria: str, preco: float, estoque: int, peso: float, ativo: bool = True):
@@ -79,84 +68,77 @@ class ProdutoFisico(Produto):
     @property
     def peso(self):
         return self._peso
-    
-# CLASSE CLIENTE
-
-class Cliente:
-    """
-    Representa um cliente da loja. O CPF é o código único e identificador.
-    Encapsulamento em 'cpf' e 'email' para validação de formato.
-    """
-    def __init__(self, nome: str, cpf: str, email: str):
-        self._nome = nome
-        self._enderecos = [] 
-        
-        # A atribuição inicial usa os setters
-        self.cpf = cpf          
-        self.email = email      
-
-    # --- ENCAPSULAMENTO PARA CPF (@property) ---
-
-    @property
-    def cpf(self) -> str:
-        """Getter: Retorna o CPF limpo (apenas dígitos)."""
-        return self._cpf
-    
-    @cpf.setter
-    def cpf(self, novo_cpf: str):
-        """Setter: Valida se o CPF é válido e armazena apenas dígitos."""
-        cpf_limpo = re.sub(r'[^0-9]', '', novo_cpf)
-        
-        # Validação básica de formato (11 dígitos)
-        if not (len(cpf_limpo) == 11 and cpf_limpo.isdigit()):
-            raise DocumentoInvalidoError("CPF deve conter exatamente 11 dígitos.")
-        
-        self._cpf = cpf_limpo
-        
-    # --- ENCAPSULAMENTO PARA EMAIL (@property) ---
-
-    @property
-    def email(self) -> str:
-        """Getter: Retorna o email."""
-        return self._email
-    
-    @email.setter
-    def email(self, novo_email: str):
-        """Setter: Validação Regex Simples para o formato do email."""
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", novo_email):
-            raise DocumentoInvalidoError("Formato de email inválido.")
-            
-        self._email = novo_email
-
-    # --- MÉTODOS CHAVE ---
-
-    def adicionar_endereco(self, endereco):
-        """Adiciona um objeto Endereco à lista de endereços do cliente."""
-        self._enderecos.append(endereco)
-
-    def __eq__(self, outro):
-        """Dois clientes são considerados iguais se tiverem o mesmo CPF (código único)."""
-        if isinstance(outro, Cliente):
-            return self._cpf == outro._cpf
-        return False
-
-    def __str__(self):
-        """Representação amigável do cliente."""
-        return f"Cliente: {self._nome} (CPF: {self._cpf[:3]}...{self._cpf[-3:]}) | Email: {self.email}"
-
-
-
 
 class Endereco:
-    """Representa um endereço de entrega ou cobrança (Objeto de Valor)."""
-    def __init__(self, cep: str, logradouro: str, numero: str, cidade: str, uf: str, complemento: str = ""):
-        self._cep = re.sub(r'[^0-9]', '', cep)
+    def __init__(self, cep: str, logradouro: str, numero: str, cidade: str, uf: str):
+        # Encapsulamento
+        self._cep = cep
         self._logradouro = logradouro
         self._numero = numero
         self._cidade = cidade
         self._uf = uf
-        self._complemento = complemento
+
+    # Propriedades de leitura pública
+    @property
+    def cep(self): return self._cep
+    @property
+    def logradouro(self): return self._logradouro
+    @property
+    def cidade(self): return self._cidade
+    @property
+    def uf(self): return self._uf
 
     def __str__(self):
-        """Representação completa do endereço."""
-        return f"{self._logradouro}, {self._numero}{' ' + self._complemento if self._complemento else ''} - {self._cidade}/{self._uf} (CEP: {self._cep})"
+        return f"{self.logradouro}, {self._numero} - {self.cidade}/{self.uf} ({self.cep})"
+
+
+class Cliente:
+    def __init__(self, cpf: str, nome: str, email: str):
+        # 1. Validação de Formato e Atribuição (Não usa Repositório)
+        self._cpf = self._validar_cpf(cpf) 
+        self._nome = nome
+        self._email = self._validar_email(email)
+        
+        # 2. Inicialização Interna da lista de Endereços (Corrigido)
+        self._enderecos = [] 
+        
+    
+    def _validar_cpf(self, cpf: str):
+        # Validação: deve ser numérico e ter 11 dígitos.
+        # Não faz verificação de existência no JSON/BD.
+        if not cpf.isdigit() or len(cpf) != 11:
+            raise DocumentoInvalidoError("CPF deve conter 11 dígitos numéricos.")
+        return cpf
+    
+    def _validar_email(self, email: str):
+        # Validação simples de email
+        if "@" not in email or "." not in email:
+            raise ValorInvalidoError("Formato de e-mail inválido.")
+        return email
+    
+    @property
+    def cpf(self): return self._cpf
+    
+    @property
+    def nome(self): return self._nome
+    
+    @property
+    def email(self): return self._email
+    
+    @property
+    def enderecos(self): 
+        # Retorna uma cópia para proteger a lista interna
+        return self._enderecos.copy()
+
+    # --- Métodos de Negócio ---
+    
+    def adicionar_endereco(self, endereco: Endereco):
+        if not isinstance(endereco, Endereco):
+            raise TypeError("O objeto deve ser uma instância de Endereco.")
+        self._enderecos.append(endereco)
+    
+    def __eq__(self, other):
+        # Permite comparação por CPF
+        if isinstance(other, Cliente):
+            return self._cpf == other.cpf
+        return False

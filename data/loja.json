@@ -13,6 +13,12 @@
                     "uf": "CE"
                 }
             ]
+        },
+        {
+            "cpf": "61420869388",
+            "nome": "carlos",
+            "email": "carlos@email.com",
+            "enderecos": []
         }
     ],
     "produtos": [
@@ -31,7 +37,7 @@
             "nome": "Curso Python",
             "categoria": "Digital",
             "preco_unitario": 299.0,
-            "estoque": 100,
+            "estoque": 95,
             "ativo": true,
             "tipo": "Produto"
         }
@@ -89,6 +95,25 @@
                     "nome": "POO Avançada",
                     "preco_na_data": 120.0,
                     "quantidade": 1
+                }
+            ],
+            "frete_valor": 25.0,
+            "cupom_codigo": "TESTE10"
+        },
+        {
+            "codigo_pedido": "01bff5ac-b015-482a-a6b7-ff88b0eb5236",
+            "data_criacao": "2025-12-09T13:36:53.123290",
+            "cpf_cliente": "12345678901",
+            "estado": "CRIADO",
+            "subtotal": 1495.0,
+            "desconto": 149.5,
+            "total": 1370.5,
+            "itens": [
+                {
+                    "sku": "CUR-002",
+                    "nome": "Curso Python",
+                    "preco_na_data": 299.0,
+                    "quantidade": 5
                 }
             ],
             "frete_valor": 25.0,
