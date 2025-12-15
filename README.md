@@ -59,7 +59,7 @@ Esta camada isola a lógica de I/O, gerenciando os arquivos `loja.json` (dados) 
 
 ## 3. Camada de Regras de Negócio e Serviços (`services/`)
 
-A camada de "inteligência" do sistema, responsável por executar a lógica complexa e as Regras de Negócio da Entrega 4.
+A camada de "inteligência" do sistema, responsável por executar a lógica complexa e as Regras de Negócio.
 
 | Arquivo | Classe | Responsabilidade Principal (Separação de Preocupações) |
 | :--- | :--- | :--- |
@@ -71,43 +71,32 @@ A camada de "inteligência" do sistema, responsável por executar a lógica comp
 
 # 📁 Estruturas de classes 
 ```
-. (root)
-├── README.md
-├── app.py                  # Ponto de entrada (CLI)
-├── requirements.txt
-│
+Simplified-E-commerce-Platform-OOP-Project/
+├── app.py
 ├── data/
-│   └── loja.json           # Persistência de dados (JSON único)
-│   └── settings.json       # Configurações globais (Frete/Cupom)
-│
-├── models/                 # Camada de Entidades e Regras de POO
+│   ├── loja.json          <-- Arquivo principal de persistência (dados da loja)
+│   └── settings.json
+|
+├── models/
 │   ├── __init__.py
-│   ├── exceptions.py       # Arquivo para classes de erro (ValorInvalidoError)
-│   ├── entidades.py        # IMPLEMENTADO: Cliente, Produto, Endereco (com encapsulamento)
-│   ├── vendas.py           # (Esqueleto pronto) Carrinho, Pedido, Item...
-│   └── transacoes.py       # (Esqueleto pronto) Pagamento, Cupom, Frete
-│
-├── repositories/           # Camada de Persistência (JSON)
+│   ├── entidades.py
+│   ├── exceptions.py
+│   ├── transacoes.py
+│   └── vendas.py
+|
+├── repositories/
 │   ├── __init__.py
-|   ├── dados.py
-│   ├── produto_repository.py   # (Esqueleto pronto) Métodos CRUD de Produto
-│   ├── cliente_repository.py   # (Esqueleto pronto) Métodos CRUD de Cliente
-│   ├── pedido_repository.py    # (Esqueleto pronto) Métodos CRUD de Pedido
-│   └── settings_repository.py 
-│
-├── services/               # Camada de Regras de Negócio e Lógica Complexa
-│   ├── __init__.py
-│   ├── estoque_service.py      # (Esqueleto pronto)
-│   ├── carrinho_service.py     # (Esqueleto pronto)
-│   ├── pedido_service.py       # (Esqueleto pronto)
-│   └── relatorio_service.py    # (Esqueleto pronto)
-│
-└── tests/                  # Testes Unitários com Pytest
+│   ├── dados.py          
+│   ├── cliente_repository.py
+│   ├── produto_repository.py
+│   └── pedido_repository.py
+|
+└── services/
     ├── __init__.py
-    ├── test_entidades.py
-    ├── test_models.py          # CRIADO: Cobre entidades.py e valida o encapsulamento.
-    ├── test_services.py        # (Próxima Fase)
-    └── test_regras_negocio.py  # (Próxima Fase)
+    ├── carrinho_service.py
+    ├── pedido_service.py
+    ├── relatorio_service.py
+    └── estoque_service.py
 ```
 
 # Requesitos de execução 
@@ -115,26 +104,3 @@ A camada de "inteligência" do sistema, responsável por executar a lógica comp
 ### Execução projeto
 
 * Python 3.1 
-
-### Execução de Testes Unitários
-
-Para validar o encapsulamento e as regras de negócio implementadas, utilize o pytest:
-
-1. Instale o framework:
-
-   ```bash
-   pip install pytest 
-
-   
-**Configuração do Ambiente**
-
-1.  Recomendamos o uso de um ambiente virtual (`venv`):
-    ```bash
-    python -m venv venv
-    .\venv\Scripts\activate  # No Windows
-    source venv/bin/activate # No Linux/macOS
-    ```
-2.  Instale todas as dependências do projeto usando o requirements.txt:
-    ```bash
-    pip install -r requirements.txt
-    ```

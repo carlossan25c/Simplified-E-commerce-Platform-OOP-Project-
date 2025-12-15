@@ -1,74 +1,116 @@
+import json
+import os
+from typing import List, Optional, Dict, Any
 from models.entidades import Produto, ProdutoFisico
-from repositories.dados import carregar_dados_loja, salvar_dados_loja
-from models.exceptions import ValorInvalidoError
-from typing import List, Dict, Any
+from models.exceptions import EntidadeNaoEncontradaError
 
+# Constantes e Funções Auxiliares de Gerenciamento de Arquivo
 
-def _produto_to_dict(produto: Produto) -> Dict[str, Any]:
-    data = {
-        'sku': produto.sku,
-        'nome': produto.nome,
-        'categoria': produto._categoria,
-        'preco_unitario': produto.preco_unitario,
-        'estoque': produto.estoque,
-        'ativo': produto._ativo,
-        # Guarda o tipo para saber qual classe desserializar
-        'tipo': 'fisico' if isinstance(produto, ProdutoFisico) else 'simples'
+NOME_ARQUIVO = 'loja.json'
+
+def _get_file_path() -> str:
+    """Gera o caminho completo para o arquivo loja.json na pasta data/."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_dir, 'data', NOME_ARQUIVO)
+
+def _carregar_dados() -> Dict[str, Any]:
+    """Carrega todo o conteúdo do arquivo loja.json."""
+    caminho = _get_file_path()
+    
+    # Estrutura base para inicialização
+    estrutura_base = {
+        'clientes': [], 
+        'produtos': [], 
+        'pedidos': [],
+        'cupons': [] # Incluído para compatibilidade
     }
-    # Adiciona o atributo 'peso' somente se for ProdutoFisico
-    if isinstance(produto, ProdutoFisico):
-        data['peso'] = produto.peso
-    return data
+    
+    if not os.path.exists(caminho):
+        os.makedirs(os.path.dirname(caminho), exist_ok=True)
+        with open(caminho, 'w', encoding='utf-8') as f:
+            json.dump(estrutura_base, f, indent=4, ensure_ascii=False)
+        return estrutura_base
+        
+    try:
+        with open(caminho, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError):
+        # Em caso de erro, retorna a estrutura base e tenta salvar o arquivo novamente
+        print(f"⚠️ Aviso: Arquivo {NOME_ARQUIVO} corrompido ou vazio. Recriando...")
+        _salvar_dados(estrutura_base)
+        return estrutura_base
 
-def _dict_to_produto(data: Dict[str, Any]) -> Produto:
-    if data.get('tipo') == 'fisico':
+def _salvar_dados(dados: Dict[str, Any]):
+    """Salva todo o conteúdo no arquivo loja.json."""
+    caminho = _get_file_path()
+    os.makedirs(os.path.dirname(caminho), exist_ok=True)
+    with open(caminho, 'w', encoding='utf-8') as f:
+        json.dump(dados, f, indent=4, ensure_ascii=False)
+
+# Funções de Desserialização
+
+def _deserializar_produto(dados_produto: Dict[str, Any]) -> Produto:
+    """Converte um dicionário de dados em um objeto Produto ou ProdutoFisico."""
+    
+    # Usa o campo 'tipo' para determinar a classe correta
+    tipo = dados_produto.get('tipo', 'Produto')
+    
+    if tipo == 'ProdutoFisico' and 'peso' in dados_produto:
         return ProdutoFisico(
-            sku=data['sku'],
-            nome=data['nome'],
-            categoria=data['categoria'],
-            preco=data['preco_unitario'],
-            estoque=data['estoque'],
-            peso=data['peso'],
-            ativo=data['ativo']
+            sku=dados_produto['sku'],
+            nome=dados_produto['nome'],
+            categoria=dados_produto['categoria'],
+            preco_unitario=dados_produto['preco_unitario'],
+            estoque=dados_produto.get('estoque', 0),
+            peso=dados_produto['peso'],
+            is_ativo=dados_produto.get('is_ativo', True)
         )
     else:
+        # Produto ou Produto Digital
         return Produto(
-            sku=data['sku'],
-            nome=data['nome'],
-            categoria=data['categoria'],
-            preco=data['preco_unitario'],
-            estoque=data['estoque'],
-            ativo=data['ativo']
+            sku=dados_produto['sku'],
+            nome=dados_produto['nome'],
+            categoria=dados_produto['categoria'],
+            preco_unitario=dados_produto['preco_unitario'],
+            estoque=dados_produto.get('estoque', 0),
+            is_ativo=dados_produto.get('is_ativo', True)
         )
 
-def carregar_todos() -> List[Produto]:
-    dados_completos = carregar_dados_loja()
-    produtos_data = dados_completos.get("produtos", []) 
-    return [_dict_to_produto(d) for d in produtos_data]
-
-def buscar_por_sku(sku: str) -> Produto | None:
-    produtos = carregar_todos()
-    for produto in produtos:
-        if produto.sku == sku:
-            return produto
-    return None
+# Funções de Repositório
 
 def salvar(produto: Produto):
-    dados_completos = carregar_dados_loja()
-    produtos = dados_completos.get("produtos", [])
+    """
+    Salva ou atualiza um produto. Se o produto já existir (pelo SKU), 
+    ele é substituído. Caso contrário, é adicionado.
+    """
+    dados = _carregar_dados()
     
-    produto_dict = _produto_to_dict(produto)
+    lista_produtos = dados.get('produtos', [])
     
-    # Atualiza ou Adiciona
-    encontrado = False
-    for i, p_data in enumerate(produtos):
-        if p_data['sku'] == produto.sku:
-            produtos[i] = produto_dict # Atualiza o objeto
-            encontrado = True
-            break
-            
-    if not encontrado:
-        produtos.append(produto_dict)
+    # Procura o índice do produto pelo SKU
+    try:
+        idx = next(i for i, p in enumerate(lista_produtos) if p['sku'] == produto.sku)
+        # Produto encontrado: Substitui o registro existente
+        lista_produtos[idx] = produto.to_dict()
+    except StopIteration:
+        # Produto não encontrado: Adiciona novo registro
+        lista_produtos.append(produto.to_dict())
         
-    dados_completos["produtos"] = produtos
-    salvar_dados_loja(dados_completos)
+    dados['produtos'] = lista_produtos
+    _salvar_dados(dados)
+
+def buscar_por_sku(sku: str) -> Optional[Produto]:
+    """Busca um produto pelo SKU."""
+    sku = sku.strip().upper()
+    dados = _carregar_dados()
+    
+    for p in dados.get('produtos', []):
+        if p['sku'] == sku:
+            return _deserializar_produto(p)
+            
+    return None
+
+def carregar_todos() -> List[Produto]:
+    """Retorna a lista completa de todos os produtos."""
+    dados = _carregar_dados()
+    return [_deserializar_produto(p) for p in dados.get('produtos', [])]

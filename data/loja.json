@@ -1,209 +1,91 @@
 {
     "clientes": [
         {
-            "cpf": "12345678901",
-            "nome": "Alice Silva",
-            "email": "alice@teste.com",
+            "cpf": "11122233344",
+            "nome": "João da Silva",
+            "email": "joao@exemplo.com",
+            "data_cadastro": "2023-10-27T10:00:00",
             "enderecos": [
                 {
-                    "cep": "63040440",
-                    "logradouro": "Rua C",
+                    "cep": "01001000",
+                    "logradouro": "Praça da Sé",
                     "numero": "100",
-                    "cidade": "Juazeiro",
-                    "uf": "CE"
+                    "cidade": "São Paulo",
+                    "uf": "SP",
+                    "complemento": null
+                },
+                {
+                    "cep": "63380000",
+                    "logradouro": "JOAQUIM  FERREIRA",
+                    "numero": "308",
+                    "cidade": "BARRO",
+                    "uf": "CE",
+                    "complemento": null
                 }
             ]
         },
         {
             "cpf": "61420869388",
-            "nome": "carlos",
-            "email": "carlos@email.com",
+            "nome": "CARLOS",
+            "email": "CARLOS@email.com",
+            "data_cadastro": "2025-12-15T16:26:21.080858",
             "enderecos": []
         }
     ],
     "produtos": [
         {
-            "sku": "LIV-001",
-            "nome": "POO Avançada",
-            "categoria": "Livros",
-            "preco_unitario": 120.0,
-            "estoque": 5,
-            "ativo": true,
-            "tipo": "ProdutoFisico",
-            "peso": 0.5
-        },
-        {
-            "sku": "CUR-002",
-            "nome": "Curso Python",
-            "categoria": "Digital",
-            "preco_unitario": 299.0,
-            "estoque": 95,
-            "ativo": true,
-            "tipo": "Produto"
-        },
-        {
-            "sku": "CEL-003",
-            "nome": "CELULAR",
-            "categoria": "ELETRÔNICOS",
-            "preco_unitario": 1800.0,
+            "sku": "SKU001",
+            "nome": "Livro POO Python",
+            "categoria": "Educação",
+            "preco_unitario": 59.9,
             "estoque": 7,
-            "ativo": true,
-            "tipo": "fisico",
-            "peso": 0.1
+            "is_ativo": true,
+            "tipo": "ProdutoFisico",
+            "peso": 0.8
+        },
+        {
+            "sku": "SKU002",
+            "nome": "Curso de python",
+            "categoria": "cursos",
+            "preco_unitario": 100.0,
+            "estoque": 10,
+            "is_ativo": true,
+            "tipo": "Produto"
         }
     ],
     "pedidos": [
         {
-            "codigo_pedido": "90d1e3f8-30c7-4b5a-94d3-000000000001",
-            "data_criacao": "2025-12-09T10:00:00.000000",
-            "cpf_cliente": "12345678901",
-            "estado": "PAGO",
-            "subtotal": 500.0,
-            "desconto": 50.0,
-            "total": 475.0,
-            "itens": [
-                {
-                    "sku": "CUR-002",
-                    "nome": "Curso Python",
-                    "preco_na_data": 250.0,
-                    "quantidade": 2
-                }
-            ],
-            "frete_valor": 25.0,
-            "cupom_codigo": "TESTE"
-        },
-        {
-            "codigo_pedido": "39942a0d-513c-4476-aa33-6d85af700911",
-            "data_criacao": "2025-12-09T11:25:01.735165",
-            "cpf_cliente": "12345678901",
-            "estado": "CRIADO",
-            "subtotal": 240.0,
-            "desconto": 24.0,
-            "total": 241.0,
-            "itens": [
-                {
-                    "sku": "LIV-001",
-                    "nome": "POO Avançada",
-                    "preco_na_data": 120.0,
-                    "quantidade": 2
-                }
-            ],
-            "frete_valor": 25.0,
-            "cupom_codigo": "TESTE10"
-        },
-        {
-            "codigo_pedido": "27121188-a4a4-4cd7-b105-38bd17058de6",
-            "data_criacao": "2025-12-09T12:17:32.652556",
-            "cpf_cliente": "12345678901",
-            "estado": "CRIADO",
-            "subtotal": 120.0,
-            "desconto": 12.0,
-            "total": 133.0,
-            "itens": [
-                {
-                    "sku": "LIV-001",
-                    "nome": "POO Avançada",
-                    "preco_na_data": 120.0,
-                    "quantidade": 1
-                }
-            ],
-            "frete_valor": 25.0,
-            "cupom_codigo": "TESTE10"
-        },
-        {
-            "codigo_pedido": "01bff5ac-b015-482a-a6b7-ff88b0eb5236",
-            "data_criacao": "2025-12-09T13:36:53.123290",
-            "cpf_cliente": "12345678901",
-            "estado": "CRIADO",
-            "subtotal": 1495.0,
-            "desconto": 149.5,
-            "total": 1370.5,
-            "itens": [
-                {
-                    "sku": "CUR-002",
-                    "nome": "Curso Python",
-                    "preco_na_data": 299.0,
-                    "quantidade": 5
-                }
-            ],
-            "frete_valor": 25.0,
-            "cupom_codigo": "TESTE10"
-        },
-        {
-            "codigo_pedido": "e904271a-b0ca-4711-9f7e-73b6ad77f164",
-            "data_criacao": "2025-12-09T19:59:13.724505",
-            "cpf_cliente": "61420869388",
-            "estado": "CRIADO",
-            "frete_valor": 15.0,
-            "cupom_codigo": null,
-            "subtotal": 120.0,
+            "codigo_pedido": "P-20251215162302-2226",
+            "cliente_cpf": "11122233344",
+            "data_criacao": "2025-12-15T16:23:02.226507",
+            "estado": "SEPARACAO",
+            "subtotal": 119.8,
             "desconto": 0.0,
-            "total": 135.0,
-            "itens": [
-                {
-                    "sku": "LIV-001",
-                    "nome": "POO Avançada",
-                    "preco_na_data": 120.0,
-                    "quantidade": 1
-                }
-            ]
-        },
-        {
-            "codigo_pedido": "4a580a3f-361a-422d-9713-a6974582ecec",
-            "data_criacao": "2025-12-09T20:13:27.059047",
-            "cpf_cliente": "61420869388",
-            "estado": "CRIADO",
-            "frete_valor": 15.0,
-            "cupom_codigo": null,
-            "subtotal": 120.0,
-            "desconto": 0.0,
-            "total": 135.0,
-            "itens": [
-                {
-                    "sku": "LIV-001",
-                    "nome": "POO Avançada",
-                    "preco_na_data": 120.0,
-                    "quantidade": 1
-                }
-            ]
-        },
-        {
-            "codigo_pedido": "337fa3f1-734b-4ae6-b2aa-9b4153278918",
-            "data_criacao": "2025-12-09T20:35:33.598076",
-            "cpf_cliente": "61420869388",
-            "estado": "CRIADO",
-            "frete_valor": 15.0,
-            "cupom_codigo": null,
-            "subtotal": 1800.0,
-            "desconto": 0.0,
-            "total": 1815.0,
-            "itens": [
-                {
-                    "sku": "CEL-003",
-                    "nome": "CELULAR",
-                    "preco_na_data": 1800.0,
-                    "quantidade": 1
-                }
-            ]
-        },
-        {
-            "codigo_pedido": "7871ffa2-0807-453f-9858-d948b89b63ad",
-            "data_criacao": "2025-12-09T20:42:44.198522",
-            "cpf_cliente": "61420869388",
-            "estado": "CRIADO",
-            "frete_valor": 15.0,
-            "cupom_codigo": null,
-            "subtotal": 1800.0,
-            "desconto": 0.0,
-            "total": 1815.0,
-            "itens": [
-                {
-                    "sku": "CEL-003",
-                    "nome": "CELULAR",
-                    "preco_na_data": 1800.0,
-                    "quantidade": 1
-                }
-            ]
+            "total": 140.8,
+            "carrinho": {
+                "cliente_cpf": "11122233344",
+                "itens": [
+                    {
+                        "produto_sku": "SKU001",
+                        "quantidade": 2,
+                        "preco_unitario": 59.9
+                    }
+                ]
+            },
+            "frete": {
+                "cep_origem": "00000000",
+                "cep_destino": "01001000",
+                "valor": 21.0,
+                "prazo_dias": 5
+            },
+            "cupom": null,
+            "pagamento": {
+                "valor": 140.8,
+                "status": "APROVADO",
+                "data_pagamento": "2025-12-15T16:23:02.227679",
+                "tipo": "PagamentoCartao",
+                "bandeira": "VISA"
+            }
         }
     ],
     "cupons": []

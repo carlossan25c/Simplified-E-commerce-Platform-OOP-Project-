@@ -1,129 +1,156 @@
-import re 
-from .exceptions import ValorInvalidoError, DocumentoInvalidoError 
-
-
-class Produto:
-    def __init__(self, sku: str, nome: str, categoria: str, preco: float, estoque: int, ativo: bool = True):
-        self._sku = sku
-        self._nome = nome
-        self._categoria = categoria
-        self._ativo = ativo
-        
-        self.preco_unitario = preco
-        self.estoque = estoque 
-        
-    @property
-    def sku(self):
-        return self._sku
-    
-    @property
-    def nome(self):
-        return self._nome
-
-    @property
-    def preco_unitario(self) -> float:
-        return self._preco_unitario
-
-    @preco_unitario.setter
-    def preco_unitario(self, novo_preco: float):
-        if novo_preco <= 0:
-            raise ValorInvalidoError("O preço unitário deve ser um valor maior que zero.")
-        self._preco_unitario = novo_preco
-
-    @property
-    def estoque(self) -> int:
-        return self._estoque
-
-    @estoque.setter
-    def estoque(self, nova_quantidade: int):
-        if nova_quantidade < 0:
-            raise ValorInvalidoError("O estoque não pode ser negativo no cadastro.")
-        self._estoque = nova_quantidade
-    
-    def ajustar_estoque(self, quantidade: int):
-        self.estoque += quantidade
-
-    def __eq__(self, outro):
-        if isinstance(outro, Produto):
-            return self._sku == outro.sku
-        return False
-    
-    def __str__(self):
-        status = "ATIVO" if self._ativo else "INATIVO"
-        return f"[{self._sku}] {self._nome} ({self._categoria}) | R$ {self.preco_unitario:.2f} | Estoque: {self.estoque} ({status})"
-
-
-class ProdutoFisico(Produto):
-    def __init__(self, sku: str, nome: str, categoria: str, preco: float, estoque: int, peso: float, ativo: bool = True):
-        super().__init__(sku, nome, categoria, preco, estoque, ativo)
-        
-        if peso <= 0:
-            raise ValorInvalidoError("O peso deve ser maior que zero para um ProdutoFisico.")
-        self._peso = peso
-    
-    @property
-    def peso(self):
-        return self._peso
-
+import re
+from typing import List, Optional
+from datetime import datetime
+from models.exceptions import DocumentoInvalidoError, ValorInvalidoError
 
 class Endereco:
-    def __init__(self, cep: str, logradouro: str, numero: str, cidade: str, uf: str):
+    def __init__(self, cep: str, logradouro: str, numero: str, cidade: str, uf: str, complemento: Optional[str] = None):
+        if not re.match(r'^\d{8}$', cep):
+            raise ValorInvalidoError("CEP deve conter 8 dígitos numéricos.")
+        if not logradouro or not numero or not cidade or not uf:
+            raise ValorInvalidoError("Logradouro, número, cidade e UF são obrigatórios.")
+            
         self._cep = cep
         self._logradouro = logradouro
         self._numero = numero
         self._cidade = cidade
-        self._uf = uf
+        self._uf = uf.upper()
+        self._complemento = complemento
 
     @property
-    def cep(self): return self._cep
+    def cep(self) -> str: return self._cep
     @property
-    def logradouro(self): return self._logradouro
+    def logradouro(self) -> str: return self._logradouro
     @property
-    def cidade(self): return self._cidade
+    def numero(self) -> str: return self._numero
     @property
-    def uf(self): return self._uf
+    def cidade(self) -> str: return self._cidade
+    @property
+    def uf(self) -> str: return self._uf
+    @property
+    def complemento(self) -> Optional[str]: return self._complemento
 
     def __str__(self):
-        return f"{self.logradouro}, {self._numero} - {self.cidade}/{self.uf} ({self.cep})"
+        comp = f" ({self.complemento})" if self.complemento else ""
+        return f"{self.logradouro}, {self.numero}{comp} - {self.cidade}/{self.uf} (CEP: {self.cep})"
+        
+    def to_dict(self):
+        return {
+            'cep': self.cep,
+            'logradouro': self.logradouro,
+            'numero': self.numero,
+            'cidade': self.cidade,
+            'uf': self.uf,
+            'complemento': self.complemento
+        }
 
 
 class Cliente:
-    def __init__(self, cpf: str, nome: str, email: str):
-        self._cpf = self._validar_cpf(cpf) 
+    def __init__(self, cpf: str, nome: str, email: str, data_cadastro: Optional[datetime] = None, enderecos: Optional[List[Endereco]] = None):
+        if not Cliente.validar_cpf(cpf):
+            raise DocumentoInvalidoError(f"CPF '{cpf}' é inválido.")
+        if not nome or not email:
+            raise ValorInvalidoError("Nome e email são obrigatórios.")
+
+        self._cpf = cpf
         self._nome = nome
-        self._email = self._validar_email(email)
-        
-        self._enderecos = [] 
-        
-    def _validar_cpf(self, cpf: str):
-        if not cpf.isdigit() or len(cpf) != 11:
-            raise DocumentoInvalidoError("CPF deve conter 11 dígitos numéricos.")
-        return cpf
-    
-    def _validar_email(self, email: str):
-        if "@" not in email or "." not in email:
-            raise ValorInvalidoError("Formato de e-mail inválido.")
-        return email
-    
+        self._email = email
+        self._data_cadastro = data_cadastro or datetime.now()
+        self._enderecos = enderecos or []
+
+    @staticmethod
+    def validar_cpf(cpf: str) -> bool:
+        """Simplificação da validação: checa se tem 11 dígitos."""
+        cpf_limpo = re.sub(r'\D', '', cpf)
+        return len(cpf_limpo) == 11
+
     @property
-    def cpf(self): return self._cpf
-    
+    def cpf(self) -> str: return self._cpf
     @property
-    def nome(self): return self._nome
-    
+    def nome(self) -> str: return self._nome
     @property
-    def email(self): return self._email
-    
+    def email(self) -> str: return self._email
     @property
-    def enderecos(self): 
-        return self._enderecos.copy()
+    def data_cadastro(self) -> datetime: return self._data_cadastro
+    @property
+    def enderecos(self) -> List[Endereco]: return self._enderecos
 
     def adicionar_endereco(self, endereco: Endereco):
         if not isinstance(endereco, Endereco):
             raise TypeError("O objeto deve ser uma instância de Endereco.")
         self._enderecos.append(endereco)
+        
+    def to_dict(self):
+        return {
+            'cpf': self.cpf,
+            'nome': self.nome,
+            'email': self.email,
+            'data_cadastro': self.data_cadastro.isoformat(),
+            'enderecos': [e.to_dict() for e in self.enderecos]
+        }
+
+
+class Produto:
+    def __init__(self, sku: str, nome: str, categoria: str, preco_unitario: float, estoque: int = 0, is_ativo: bool = True):
+        if not sku or not nome or preco_unitario <= 0:
+            raise ValorInvalidoError("SKU, nome e preço unitário válido são obrigatórios para o Produto.")
+        
+        self._sku = sku
+        self._nome = nome
+        self._categoria = categoria
+        self._preco_unitario = preco_unitario
+        self._estoque = estoque
+        self._is_ativo = is_ativo
+
+    @property
+    def sku(self) -> str: return self._sku
+    @property
+    def nome(self) -> str: return self._nome
+    @property
+    def categoria(self) -> str: return self._categoria
+    @property
+    def preco_unitario(self) -> float: return self._preco_unitario
+    @property
+    def is_ativo(self) -> bool: return self._is_ativo
     
-    def __eq__(self, other):
-        if isinstance(other, Cliente):
-            return self._cpf == other.cpf
-        return False
+    # Propriedade de Estoque (pode ser usado para produtos digitais que têm um estoque virtual)
+    @property
+    def estoque(self) -> int: return self._estoque
+
+    @estoque.setter
+    def estoque(self, novo_valor: int):
+        if novo_valor < 0:
+             raise ValorInvalidoError("Estoque não pode ser negativo.")
+        self._estoque = novo_valor
+
+    def ajustar_estoque(self, quantidade: int):
+        """Ajusta o estoque, aceitando valores positivos (entrada) ou negativos (saída)."""
+        novo_estoque = self._estoque + quantidade
+        self.estoque = novo_estoque # Usa o setter para validação de valor < 0
+
+    def to_dict(self):
+        return {
+            'sku': self.sku,
+            'nome': self.nome,
+            'categoria': self.categoria,
+            'preco_unitario': self.preco_unitario,
+            'estoque': self.estoque,
+            'is_ativo': self.is_ativo,
+            'tipo': self.__class__.__name__ # Adiciona o tipo para desserialização
+        }
+
+
+class ProdutoFisico(Produto):
+    def __init__(self, sku: str, nome: str, categoria: str, preco_unitario: float, estoque: int, peso: float, is_ativo: bool = True):
+        super().__init__(sku, nome, categoria, preco_unitario, estoque, is_ativo)
+        if peso <= 0:
+            raise ValorInvalidoError("Produto Físico deve ter peso positivo.")
+        self._peso = peso
+
+    @property
+    def peso(self) -> float: return self._peso
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['peso'] = self.peso
+        return data

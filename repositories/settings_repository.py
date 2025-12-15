@@ -14,6 +14,7 @@ def carregar_settings() -> Dict[str, Any]:
     """Lê o conteúdo do arquivo settings.json."""
     caminho = _get_file_path(SETTINGS_FILE)
     
+    # Estrutura base com valores padrão
     estrutura_base = {
         "regra_estoque": {
             "limite_seguranca": 5, 
@@ -25,6 +26,7 @@ def carregar_settings() -> Dict[str, Any]:
         }
     }
     
+    # 1. Tenta criar o arquivo e a estrutura de diretórios se não existir
     if not os.path.exists(caminho):
         try:
             os.makedirs(os.path.dirname(caminho), exist_ok=True)
@@ -32,11 +34,16 @@ def carregar_settings() -> Dict[str, Any]:
                 json.dump(estrutura_base, f, indent=4, ensure_ascii=False)
             return estrutura_base
         except:
-            return estrutura_base # Retorna o padrão se a escrita falhar
+            # Em caso de falha ao criar/escrever, retorna a estrutura base em memória
+            return estrutura_base 
             
+    # 2. Tenta ler o arquivo existente
     try:
         with open(caminho, 'r', encoding='utf-8') as f:
             dados = json.load(f)
-            return {**estrutura_base, **dados} # Mescla com a base
+            # Mescla: garante que valores persistidos (dados) sobrescrevam os padrões (estrutura_base),
+            # mas mantém os padrões para chaves que faltam no arquivo.
+            return {**estrutura_base, **dados} 
     except:
-        return estrutura_base 
+        # Se houver erro de leitura ou JSONDecodeError, retorna a estrutura base
+        return estrutura_base

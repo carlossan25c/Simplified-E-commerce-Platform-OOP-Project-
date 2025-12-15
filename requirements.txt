@@ -1,2 +1,0 @@
-# Bibliotecas necessárias para rodar os testes unitários do projeto
-pytest>=7.0.0
