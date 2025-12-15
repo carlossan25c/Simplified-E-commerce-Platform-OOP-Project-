@@ -104,3 +104,11 @@ Simplified-E-commerce-Platform-OOP-Project/
 ### Execução projeto
 
 * Python 3.1 
+
+### Clonagem do repositório
+
+* git clone `https://github.com/carlossan25c/Simplified-E-commerce-Platform-OOP-Project-` 
+
+### Execução via CLI
+
+* `python app.py`
